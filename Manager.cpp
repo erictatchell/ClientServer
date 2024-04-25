@@ -24,16 +24,22 @@ void Manager::AddClientIfNew(sockaddr_in& client) {
     if (!found) {
         Client c;
         c.address = client;
+        c.ip = inet_ntoa(c.address.sin_addr);
         clients.push_back(c);
     }
 }
 
 int Manager::resolve(sockaddr_in& client, const char* buffer, Manager& manager) {
     manager.AddClientIfNew(client);
+    cout << "In resolve: clients buffer is\n<< " << buffer << " >> \n";
 
     if (string(buffer) == END_SERVER_STR) {
         cout << "END_SERVER received, quitting\n";
         return END_SERVER;
+    }
+
+    if (string(buffer) == GET_CLIENT_LIST_STR) {
+        return GET_CLIENT_LIST;
     }
 
     string IP;
@@ -48,5 +54,15 @@ int Manager::resolve(sockaddr_in& client, const char* buffer, Manager& manager) 
 
 Manager::Manager() {
     clients = std::vector<Client>();
+}
+
+string Manager::printClientList(Manager &manager) {
+    std::string result;
+    int i = 1;
+    for (auto& info : manager.clients) {
+        result += std::to_string(i) + ": " + info.ip + '\n';
+        i++;
+    }
+    return result;
 }
 

@@ -19,7 +19,7 @@ int main() {
     std::string message;
 
     while (true) {
-        std::cout << "Enter message: ";
+        std::cout << "Say:";
         std::getline(std::cin, message);
         sendto(s, message.c_str(), message.size(), 0, (sockaddr*)&server, sizeof(server));
 
@@ -32,7 +32,7 @@ int main() {
         }
 
         buffer[bytesReceived] = '\0';
-        std::cout << "Server says: " << buffer << std::endl;
+        std::cout << "> " << buffer << std::endl;
     }
 
     closesocket(s);

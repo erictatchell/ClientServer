@@ -28,7 +28,7 @@ std::queue<std::string> queue;
 
 bool running;
 
-void receivePacket(SOCKET s, sockaddr_in& client, int& clientSize, Manager& manager);
-void sendPacket(SOCKET s, sockaddr_in& client, int& clientSize, Manager& manager);
+void receivePacket(SOCKET s, Manager& manager);
+void sendPacket(SOCKET s, Manager& manager);
 
 #endif //UDPCHAT_SERVER_HPP

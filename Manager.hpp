@@ -14,12 +14,15 @@
 #define END_SERVER_STR "END_SERVER"
 #define LEAVE_SERVER 2
 #define LEAVE_SERVER_STR "LEAVE_SERVER_"
+#define GET_CLIENT_LIST_STR "GET_CLIENT_LIST"
+#define GET_CLIENT_LIST 3
 
 using std::cout;
 using std::string;
 
 typedef struct {
     std::string name;
+    std::string ip;
     sockaddr_in address;
 } Client;
 
@@ -50,6 +53,12 @@ public:
      * client: clients addr
      */
     void AddClientIfNew(sockaddr_in &client);
+
+    static string printClientList(Manager& manager);
+
+    std::vector<Client> getClientList() {
+        return clients;
+    };
 };
 
 #endif //UDPCHAT_MANAGER_HPP
