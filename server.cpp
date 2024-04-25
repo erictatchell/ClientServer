@@ -1,14 +1,13 @@
 #include "server.hpp"
-#include "Manager.hpp"
 
-void receivePacket(SOCKET s, sockaddr_in& client, int& clientSize) {
+void receivePacket(SOCKET s, sockaddr_in& client, int& clientSize, Manager& manager) {
     while (running) {
         char buffer[BUFLEN];
         int bytes = recvfrom(s, buffer, BUFLEN, 0, (struct sockaddr*)&client, &clientSize);
         if (bytes > 0) {
             std::lock_guard<std::mutex> lock(mtx);
 
-            int message = Manager::resolve(client, buffer);
+            int message = Manager::resolve(client, buffer, manager);
 
             if (message == NORMAL_MESSAGE) {
                 queue.emplace(buffer);
@@ -22,7 +21,7 @@ void receivePacket(SOCKET s, sockaddr_in& client, int& clientSize) {
     }
 }
 
-void sendPacket(SOCKET s, sockaddr_in& client, int& clientSize) {
+void sendPacket(SOCKET s, sockaddr_in& client, int& clientSize, Manager& manager) {
     while (running) {
         {
             std::unique_lock<std::mutex> lock(mtx);
@@ -43,6 +42,8 @@ int main() {
     sockaddr_in server, client;
     int clientSize = sizeof(client);
 
+    Manager manager;
+
     WSADATA data;
     WSAStartup(MAKEWORD(2, 2), &data);
 
@@ -56,8 +57,8 @@ int main() {
         std::cout << "Server started on " << SERVER_IP << ":" << SERVER_PORT << '\n';
     }
 
-    std::thread receiveThread(receivePacket, s, std::ref(client), std::ref(clientSize));
-    std::thread sendThread(sendPacket, s, std::ref(client), std::ref(clientSize));
+    std::thread receiveThread(receivePacket, s, std::ref(client), std::ref(clientSize), std::ref(manager));
+    std::thread sendThread(sendPacket, s, std::ref(client), std::ref(clientSize), std::ref(manager));
 
     receiveThread.join();
     sendThread.join();

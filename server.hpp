@@ -12,6 +12,7 @@
 #include <vector>
 #include <queue>
 #include <condition_variable>
+#include "Manager.hpp"
 
 #define BUFLEN 512
 
@@ -27,7 +28,7 @@ std::queue<std::string> queue;
 
 bool running;
 
-void receivePacket(SOCKET s, sockaddr_in& client, int& clientSize);
-void sendPacket(SOCKET s, sockaddr_in& client, int& clientSize);
+void receivePacket(SOCKET s, sockaddr_in& client, int& clientSize, Manager& manager);
+void sendPacket(SOCKET s, sockaddr_in& client, int& clientSize, Manager& manager);
 
 #endif //UDPCHAT_SERVER_HPP

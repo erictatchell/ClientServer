@@ -28,8 +28,8 @@ void Manager::AddClientIfNew(sockaddr_in& client) {
     }
 }
 
-int Manager::resolve(sockaddr_in& client, const char* buffer) {
-    Manager::AddClientIfNew(client);
+int Manager::resolve(sockaddr_in& client, const char* buffer, Manager& manager) {
+    manager.AddClientIfNew(client);
 
     if (string(buffer) == END_SERVER_STR) {
         cout << "END_SERVER received, quitting\n";
@@ -37,12 +37,16 @@ int Manager::resolve(sockaddr_in& client, const char* buffer) {
     }
 
     string IP;
-    if (leaving(IP, buffer) {
+    if (Manager::leaving(IP, buffer)) {
         // remove matching IP client from vector
 
         cout << "Client " << IP << "left the server\n";
         return LEAVE_SERVER;
     }
     return NORMAL_MESSAGE;
+}
+
+Manager::Manager() {
+    clients = std::vector<Client>();
 }
 

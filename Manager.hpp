@@ -25,9 +25,9 @@ typedef struct {
 
 class Manager {
 private:
-    static std::vector<Client> clients;
+    std::vector<Client> clients;
 public:
-    Manager() = delete;
+    Manager();
 
     /* If this returns NORMAL_MESSAGE (0), it's a regular message. Otherwise,
      *
@@ -35,7 +35,7 @@ public:
      * LEAVE_SERVER (2): user left the server
      * buffer: users message
      */
-    static int resolve(sockaddr_in& client, const char* buffer);
+    static int resolve(sockaddr_in& client, const char* buffer, Manager& manager);
 
     /* If true, initialize the referenced IP string the string's included IP
      *
@@ -49,7 +49,7 @@ public:
      *
      * client: clients addr
      */
-    static void AddClientIfNew(sockaddr_in &client);
+    void AddClientIfNew(sockaddr_in &client);
 };
 
 #endif //UDPCHAT_MANAGER_HPP
