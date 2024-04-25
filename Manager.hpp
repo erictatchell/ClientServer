@@ -3,6 +3,7 @@
 //
 #include <iostream>
 #include <string>
+#include <utility>
 #include <vector>
 #include <ws2tcpip.h>
 
@@ -20,11 +21,12 @@
 using std::cout;
 using std::string;
 
-typedef struct {
-    std::string name;
-    std::string ip;
-    sockaddr_in address;
-} Client;
+struct Client {
+    std::string NAME;
+    std::string IP;
+    sockaddr_in ADDRESS{};
+    Client() {}
+};
 
 class Manager {
 private:
@@ -48,11 +50,11 @@ public:
     static bool leaving(string& ip, const string& message);
 
     /*
-     * Called before Manager::resolve, this adds the client address to the list if its new
+     * Called before Manager::resolve, this adds the client ADDRESS to the list if its new
      *
      * client: clients addr
      */
-    void AddClientIfNew(sockaddr_in &client);
+    void AddClientIfNew(sockaddr_in &client, const char* buffer);
 
     static string printClientList(Manager& manager);
 

@@ -6,31 +6,32 @@
 bool Manager::leaving(string& ip, const string& message) {
     string strLEAVE = LEAVE_SERVER_STR; // so we can perform string operations
     if (message.compare(0, strLEAVE.size(), strLEAVE) == 0) {
-        // the IP address is everything after "LEAVE_SERVER_"
+        // the IP ADDRESS is everything after "LEAVE_SERVER_"
         ip = message.substr(strLEAVE.size());
         return true;
     }
     return false;
 }
 
-void Manager::AddClientIfNew(sockaddr_in& client) {
+void Manager::AddClientIfNew(sockaddr_in& client, const char* buffer) {
     bool found = false;
     for (const auto& info : clients) {
-        if (memcmp(&info.address, &client, sizeof(client)) == 0) {
+        if (memcmp(&info.ADDRESS, &client, sizeof(client)) == 0) {
             found = true;
             break;
         }
     }
     if (!found) {
         Client c;
-        c.address = client;
-        c.ip = inet_ntoa(c.address.sin_addr);
+        c.ADDRESS = client;
+        c.NAME = buffer;
+        c.IP = inet_ntoa(c.ADDRESS.sin_addr);
         clients.push_back(c);
     }
 }
 
 int Manager::resolve(sockaddr_in& client, const char* buffer, Manager& manager) {
-    manager.AddClientIfNew(client);
+    manager.AddClientIfNew(client, buffer);
     cout << "In resolve: clients buffer is\n<< " << buffer << " >> \n";
 
     if (string(buffer) == END_SERVER_STR) {
@@ -60,7 +61,7 @@ string Manager::printClientList(Manager &manager) {
     std::string result;
     int i = 1;
     for (auto& info : manager.clients) {
-        result += std::to_string(i) + ": " + info.ip + '\n';
+        result += std::to_string(i) + ": " + info.NAME + " (" + info.IP + ")\n";
         i++;
     }
     return result;

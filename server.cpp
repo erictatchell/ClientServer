@@ -15,15 +15,14 @@ void receivePacket(SOCKET s, Manager& manager) {
                 case NORMAL_MESSAGE:
                     queue.emplace(buffer);
                     cout << "Received: " << buffer << '\n';
-                    cv.notify_one();
                     break;
                 case END_SERVER:
                     running = false;
                     break;
                 case GET_CLIENT_LIST:
                     queue.emplace(Manager::printClientList(manager));
-                    cv.notify_one();
             }
+            cv.notify_one();
         }
     }
 }
@@ -39,7 +38,7 @@ void sendPacket(SOCKET s, Manager& manager) {
             queue.pop();
 
             for (auto& client : manager.getClientList()) {
-                if (sendto(s, message.c_str(), message.size(), 0, (struct sockaddr*)&client.address, sizeof(client.address)) > -1) {
+                if (sendto(s, message.c_str(), message.size(), 0, (struct sockaddr*)&client.ADDRESS, sizeof(client.ADDRESS)) > -1) {
                     cout << "Sent: " << message << '\n';
                 }
             }
