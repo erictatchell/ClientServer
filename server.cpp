@@ -1,39 +1,5 @@
 #include "server.hpp"
-
-/* If true, initialize the referenced IP string the string's included IP
- *
- * ip: uninitialized at function entry, to be i
- * message: the users message
- */
-bool leaving(string& ip, const string& message) {
-    string strLEAVE = LEAVE_SERVER; // so we can perform string operations
-    if (message.compare(0, strLEAVE.size(), strLEAVE) == 0) {
-        // the IP address is everything after "LEAVE_SERVER_"
-        ip = message.substr(strLEAVE.size());
-        return true;
-    }
-    return false;
-}
-
-void handleMessage() {
-
-}
-
-int checkMessage(const char* buffer) {
-    if (string(buffer) == END_SERVER_STRING) {
-        cout << "END_SERVER received, quitting\n";
-        running = false;
-        return END_SERVER;
-    }
-
-    string IP;
-    if (leaving(IP, buffer) {
-        // remove matching IP client from vector
-        cout << "Client " << IP << "left the server\n";
-        return 2;
-    }
-    return 0;
-}
+#include "Manager.hpp"
 
 void receivePacket(SOCKET s, sockaddr_in& client, int& clientSize) {
     while (running) {
@@ -41,12 +7,17 @@ void receivePacket(SOCKET s, sockaddr_in& client, int& clientSize) {
         int bytes = recvfrom(s, buffer, BUFLEN, 0, (struct sockaddr*)&client, &clientSize);
         if (bytes > 0) {
             std::lock_guard<std::mutex> lock(mtx);
-            int message = checkMessage(buffer);
-            if (message == NORMAL) {
+
+            int message = Manager::resolve(client, buffer);
+
+            if (message == NORMAL_MESSAGE) {
                 queue.emplace(buffer);
                 cout << "Received: " << buffer << '\n';
                 cv.notify_one();
-            } else if (message == END_SERVER) break;
+            } else if (message == END_SERVER) {
+                running = false;
+                break;
+            }
         }
     }
 }
